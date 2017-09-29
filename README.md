@@ -30,14 +30,14 @@ apt-get install python
 
 ### 2. 开发环境配置 ###
 - **2.1 docker相关组件的安装**<br>
-apt install docker.io<br>
-apt install docker-compose
+apt-get install docker.io<br>
+apt-get install docker-compose
 
 - **2.2 go语言环境的安装**	<br>
 wget https://storage.googleapis.com/golang/go1.8.3.linux-amd64.tar.gz<br>
 tar -xvf go1.8.3.linux-amd64.tar.gz<br>
 mv go /usr/local<br>
-sudo chown -R root:root ./go<br>
+sudo chown -R root:root /usr/local/go<br>
 mkdir -p /opt/goworkspace/src<br>
 mkdir -p /opt/goworkspace/bin<br>
 mkdir -p /opt/goworkspace/pkg<br>
@@ -55,6 +55,7 @@ xz -d node-v6.9.5-linux-x64.tar.xz<br>
 tar -xvf node-v6.9.5-linux-x64.tar<br>
 mv node-v6.9.5-linux-x64 node<br>
 sudo mv node /usr/local<br>
+sudo chown -R root:root /usr/local/node<br>
 sudo vi /etc/profile<br>
 **添加如下内容**<br>
 export PATH=$PATH:/usr/local/node/bin<br>
