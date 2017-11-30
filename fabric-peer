@@ -1,0 +1,45 @@
+##fabric 源码解析 之 peer
+
+1.	ledgermgmt.Initialize() 初始化账本提供者
+
+2.  peerServer, err := peer.CreatePeerServer(listenAddr, secureConfig) 创建peer grpc服务
+
+3.  ehubGrpcServer, err := createEventHubServer(secureConfig) 创建eventHub服务
+
+4.  ccSrv, ccEpFunc := createChaincodeServer(peerServer, listenAddr)创建chaincode服务
+
+5.  registerChaincodeSupport(ccSrv.Server(), ccEpFunc)注册chaincode支持
+
+6. 	pb.RegisterAdminServer(peerServer.Server(), core.NewAdminServer())注册admin服务
+
+7.  pb.RegisterEndorserServer(peerServer.Server(), serverEndorser)注册背书服务
+
+8.  err = service.InitGossipService(serializedIdentity, peerEndpoint.Address, peerServer.Server(),
+		messageCryptoService, secAdv, secureDialOpts, bootstrap...) 初始化gossip组件
+    
+9.  initSysCCs() 初始化系统chaincodes
+
+10. peer.Initialize(func(cid string) {logger.Debugf("Deploying system CC, for chain <%s>", cid)scc.DeploySysCCs(cid)})初始化chains
+
+11. go func() {
+		var grpcErr error
+		if grpcErr = peerServer.Start(); grpcErr != nil {
+			grpcErr = fmt.Errorf("grpc server exited with error: %s", grpcErr)
+		} else {
+			logger.Info("peer server exited")
+		}
+		serve <- grpcErr
+	}()  启动peer 服务
+  
+12. if ehubGrpcServer != nil {
+	  	go ehubGrpcServer.Start()
+	  } 启动eventHub服务
+    
+13. overrideLogModules := []string{"msp", "gossip", "ledger", "cauthdsl", "policies", "grpc"}
+	for _, module := range overrideLogModules {
+		err = common.SetLogLevelFromViper(module)
+		if err != nil {
+			logger.Warningf("Error setting log level for module '%s': %s", module, err.Error())
+		}
+	}//设置各模块logger级别
+  
